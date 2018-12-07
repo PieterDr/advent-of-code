@@ -22,10 +22,11 @@ public class Day7 {
                     return new Pair<>(first, second);
                 })
                 .forEach(tasks::insert);
-        tasks.part1();
+        List<Task> tasksSorted = tasks.tasks.values().stream().sorted().collect(toList());
+        tasks.part1(tasksSorted);
         tasks.tasks.values().forEach(Task::reset);
         System.out.println();
-        tasks.part2();
+        tasks.part2(tasksSorted);
     }
 
     private static class Tasks {
@@ -40,11 +41,9 @@ public class Day7 {
             tasks.put(requirement.label, requirement);
         }
 
-        void part1() {
-            List<Task> tasksSorted = this.tasks.values().stream().sorted().collect(toList());
-            Optional<Task> nextTask;
-            do {
-                nextTask = tasksSorted.stream()
+        void part1(List<Task> tasks) {
+            while (!tasks.stream().allMatch(Task::isFinished)) {
+                Optional<Task> nextTask = tasks.stream()
                         .filter(task -> !task.finished)
                         .filter(Task::requirementsMet)
                         .findFirst();
@@ -52,15 +51,14 @@ public class Day7 {
                     task.finished = true;
                     System.out.print(task.label);
                 });
-            } while (nextTask.isPresent());
+            }
         }
 
-        void part2() {
-            List<Task> tasksSorted = this.tasks.values().stream().sorted().collect(toList());
+        void part2(List<Task> tasks) {
             WorkForce workForce = new WorkForce(5);
             int i = 0;
-            while (!tasksSorted.stream().allMatch(Task::isFinished)) {
-                tasksSorted.stream()
+            while (!tasks.stream().allMatch(Task::isFinished)) {
+                tasks.stream()
                         .filter(task -> !task.started)
                         .filter(Task::requirementsMet)
                         .forEach(workForce::submit);
@@ -137,7 +135,6 @@ public class Day7 {
         private boolean started = false;
         private boolean finished = false;
         private SortedSet<Task> requirements = new TreeSet<>();
-
 
         Task(String label) {
             this.label = label;
