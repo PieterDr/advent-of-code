@@ -11,6 +11,15 @@ public class Point implements Comparable<Point> {
         this.y = y;
     }
 
+    public Point(String x, String y) {
+        this.x = Integer.parseInt(x);
+        this.y = Integer.parseInt(y);
+    }
+
+    public Point add(Point o) {
+        return new Point(x + o.x, y + o.y);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
