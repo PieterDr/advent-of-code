@@ -12,7 +12,7 @@ public class Pair<L, R> {
 
     @Override
     public String toString() {
-        return "\nPair{" + left + "," + right + "}";
+        return "Pair{" + left + "," + right + "}";
     }
 
     public L left() {
