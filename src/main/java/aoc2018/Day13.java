@@ -18,11 +18,17 @@ public class Day13 {
 
     public static void main(String[] args) throws IOException {
         parse();
+
         while (true) {
-            TRACKS.values().stream()
+            List<Track> tracksWithCart = TRACKS.values().stream()
                     .filter(Track::hasCart)
-                    .collect(Collectors.toList())
-                    .forEach(Track::moveCart);
+                    .collect(Collectors.toList());
+            if (tracksWithCart.size() == 1) {
+                System.out.println("Last cart at: " + tracksWithCart.get(0).point);
+                break;
+            } else {
+                tracksWithCart.forEach(Track::moveCart);
+            }
         }
     }
 
@@ -107,17 +113,20 @@ public class Day13 {
         }
 
         void moveCart() {
-            Track next = TRACKS.get(point.apply(cart.heading));
-            next.arrive(cart);
-            this.cart = null;
+            if (hasCart()) {
+                Track next = TRACKS.get(point.apply(cart.heading));
+                next.arrive(cart);
+                this.cart = null;
+            }
         }
 
         private void arrive(Cart cart) {
             if (hasCart()) {
-                throw new RuntimeException("Crashed at: " + point);
+                this.cart = null;
+            } else {
+                this.cart = cart;
+                cart.changeHeading(new HashSet<>(directions));
             }
-            this.cart = cart;
-            cart.changeHeading(new HashSet<>(directions));
         }
     }
 
