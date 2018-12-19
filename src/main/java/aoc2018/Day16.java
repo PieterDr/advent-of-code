@@ -3,44 +3,64 @@ package aoc2018;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Arrays.copyOf;
+import static java.util.stream.Collectors.toList;
 
 public class Day16 {
 
+    private static final SortedMap<Integer, List<Operation>> OPCODE_TEMP_MAP = new TreeMap<>();
+    private static final SortedMap<Integer, Operation> OPCODE_MAP = new TreeMap<>();
+
     public static void main(String[] args) throws IOException {
-        List<String> input = Files.readAllLines(Paths.get("src/main/resources/2018", "day16.txt"));
+        List<String> input = Files.readAllLines(Paths.get("src/main/resources/2018", "day16_1.txt"));
         Iterator<String> it = input.iterator();
-        int n = 0;
+        int i = 0;
         while (it.hasNext()) {
-            String before = it.next();
-            String command = it.next();
-            String after = it.next();
-            if (before.trim().isEmpty()) {
-                break;
-            }
-            int[] initial = parseToState(before);
-            int[] comm = parseToCommand(command);
-            int matches = 0;
+            int[] initial = parseToState(it.next());
+            int[] comm = parseToCommand(it.next());
+            int[] after = parseToState(it.next());
+            Set<Operation> matches = new HashSet<>();
             for (Operation operation : Operation.values()) {
                 int[] result = operation.apply(copyOf(initial, 4), comm);
-                if (Arrays.equals(result, parseToState(after))) {
-                    System.out.println(before);
-                    System.out.println(command);
-                    System.out.println(after);
-                    System.out.println(operation.name());
-                    System.out.println();
-                    matches++;
+                if (Arrays.equals(result, after)) {
+                    matches.add(operation);
                 }
             }
-            if (matches >= 3) {
-                n++;
+            if (matches.size() >= 3) {
+                i++;
+            }
+            OPCODE_TEMP_MAP.merge(comm[0], new ArrayList<>(matches), (o, n) -> o.stream().filter(n::contains).collect(toList()));
+        }
+        System.out.println(i);
+        System.out.println(OPCODE_TEMP_MAP);
+
+        while (tempMapNotClear()) {
+            for (Map.Entry<Integer, List<Operation>> entry : OPCODE_TEMP_MAP.entrySet()) {
+                if (entry.getValue().size() == 1) {
+                    Operation operation = entry.getValue().get(0);
+                    OPCODE_MAP.put(entry.getKey(), operation);
+                    for (List<Operation> operations : OPCODE_TEMP_MAP.values()) {
+                        operations.remove(operation);
+                    }
+                }
             }
         }
-        System.out.println(n);
+        System.out.println(OPCODE_MAP);
+
+        int[] state = new int[]{0, 0, 0, 0};
+        List<String> commands = Files.readAllLines(Paths.get("src/main/resources/2018", "day16_2.txt"));
+        for (String command : commands) {
+            int[] comm = parseToCommand(command);
+            state = OPCODE_MAP.get(comm[0])
+                    .apply(state, comm);
+        }
+        System.out.println(Arrays.toString(state));
+    }
+
+    private static boolean tempMapNotClear() {
+        return OPCODE_TEMP_MAP.values().stream().anyMatch(set -> set.size() != 0);
     }
 
     private static int[] parseToState(String line) {
