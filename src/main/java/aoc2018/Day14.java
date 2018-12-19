@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class Day14 {
 
-    private static final int TARGET = 909_441;
+    private static final String TARGET = "909441";
 
     private static List<Integer> RECIPES = new ArrayList<>();
     private static int E_1 = 0;
@@ -15,14 +15,30 @@ public class Day14 {
 
 
     public static void main(String[] args) {
+        long start = System.currentTimeMillis();
         RECIPES.add(E_1, 3);
         RECIPES.add(E_2, 7);
-        while (RECIPES.size() < TARGET + 10) {
+        while (!containsPattern(RECIPES)) {
             addRecipes();
             moveElf1();
             moveElf2();
         }
-        System.out.println(RECIPES.subList(TARGET, TARGET + 10));
+
+        System.out.println(
+                RECIPES.stream()
+                        .map(n -> "" + n)
+                        .collect(Collectors.joining())
+                        .indexOf(TARGET)
+        );
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
+    }
+
+    private static boolean containsPattern(List<Integer> recipes) {
+        if (recipes.size() < TARGET.length() * 2) {
+            return false;
+        }
+        return recipes.subList(recipes.size() - TARGET.length() * 2, recipes.size()).stream().map(n -> "" + n).collect(Collectors.joining("")).contains(TARGET);
     }
 
     private static void addRecipes() {
