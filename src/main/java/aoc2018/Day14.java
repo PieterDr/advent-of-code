@@ -1,9 +1,10 @@
 package aoc2018;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 public class Day14 {
 
@@ -23,10 +24,9 @@ public class Day14 {
             moveElf1();
             moveElf2();
         }
-
         System.out.println(
                 RECIPES.stream()
-                        .map(n -> "" + n)
+                        .map(n -> Integer.toString(n))
                         .collect(Collectors.joining())
                         .indexOf(TARGET)
         );
@@ -35,10 +35,12 @@ public class Day14 {
     }
 
     private static boolean containsPattern(List<Integer> recipes) {
-        if (recipes.size() < TARGET.length() * 2) {
+        if (recipes.size() < TARGET.length() + 1) {
             return false;
         }
-        return recipes.subList(recipes.size() - TARGET.length() * 2, recipes.size()).stream().map(n -> "" + n).collect(Collectors.joining("")).contains(TARGET);
+        StringBuilder sb = new StringBuilder();
+        recipes.subList(recipes.size() - TARGET.length() - 1, recipes.size()).forEach(sb::append);
+        return sb.toString().contains(TARGET);
     }
 
     private static void addRecipes() {
@@ -61,8 +63,9 @@ public class Day14 {
     }
 
     private static List<Integer> split(int recipes) {
-        return Arrays.stream(String.format("%d", recipes).split(""))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
+        int units = recipes % 10;
+        return recipes < 10
+                ? asList(units)
+                : asList((recipes - units) / 10, units);
     }
 }
