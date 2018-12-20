@@ -84,7 +84,7 @@ public class Day15 {
             System.out.println(hpLeft);
             System.out.println(round * hpLeft);
 
-            print();
+            throw e;
         }
     }
 
@@ -113,10 +113,7 @@ public class Day15 {
             }
         }
 
-        private void takeDamage() {
-            hp -= 3;
-            if (!isAlive()) MAP.put(position, null);
-        }
+        abstract void takeDamage();
 
         void takeTurn() {
             if (!isAlive()) {
@@ -230,6 +227,12 @@ public class Day15 {
         }
 
         @Override
+        void takeDamage() {
+            hp -= 3;
+            if (!isAlive()) throw new RuntimeException("elf died");
+        }
+
+        @Override
         List<? extends Combatant> enemies() {
             return GNOMES;
         }
@@ -243,6 +246,12 @@ public class Day15 {
     private static class Gnome extends Combatant {
         Gnome(Point position) {
             super(position);
+        }
+
+        @Override
+        void takeDamage() {
+            hp -= 20;
+            if (!isAlive()) MAP.put(position, null);
         }
 
         @Override
