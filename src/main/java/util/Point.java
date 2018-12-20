@@ -59,4 +59,8 @@ public class Point implements Comparable<Point> {
         int xCompare = x - o.x;
         return xCompare == 0 ? y - o.y : xCompare;
     }
+
+    public int distanceTo(Point o) {
+        return Math.abs(o.x - x) + Math.abs(o.y - y);
+    }
 }
