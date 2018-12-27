@@ -10,13 +10,34 @@ import java.util.Optional;
 public class Day18 {
 
     private static final int SIZE = 50;
+    private static final int STEPS = 1000000000;
     private static char[][] map = new char[SIZE][SIZE];
+    private static List<Integer> products = new ArrayList<>(STEPS + STEPS / 4);
 
     public static void main(String[] args) throws IOException {
         parse();
-        for (int i = 0; i < 10; i++) {
+        boolean cont = true;
+        while (cont) {
             step();
+            int product = calculateProduct();
+            int firstIndex = products.indexOf(product);
+            int lastIndex = products.lastIndexOf(product);
+            if (firstIndex != -1 && firstIndex != lastIndex) {
+                List<Integer> sublist = new ArrayList<>(products.subList(firstIndex, lastIndex));
+                if (sublist.equals(products.subList(lastIndex, products.size()))) {
+                    int steps = STEPS / sublist.size();
+                    for (int j = 0; j < steps; j++) {
+                        products.addAll(sublist);
+                    }
+                    cont = false;
+                }
+            }
+            products.add(product);
         }
+        System.out.println(products.get(STEPS - 1));
+    }
+
+    private static int calculateProduct() {
         int trees = 0;
         int lumberyards = 0;
         for (int row = 0; row < SIZE; row++) {
@@ -25,7 +46,7 @@ public class Day18 {
                 if (map[row][col] == '#') lumberyards++;
             }
         }
-        System.out.println(trees * lumberyards);
+        return trees * lumberyards;
     }
 
     private static void step() {
