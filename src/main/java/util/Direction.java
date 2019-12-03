@@ -63,6 +63,16 @@ public enum Direction {
         }
     };
 
+    public static Direction of(char c) {
+        switch (c) {
+            case 'U': return UP;
+            case 'D': return DOWN;
+            case 'L': return LEFT;
+            case 'R': return RIGHT;
+            default: throw new IllegalArgumentException("Invalid direction: " + c);
+        }
+    }
+
     public abstract Direction opposite();
 
     public abstract Direction turnLeft();
