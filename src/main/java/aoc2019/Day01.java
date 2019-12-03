@@ -1,31 +1,33 @@
 package aoc2019;
 
+import util.Day;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
 import static java.lang.Math.floor;
 
-public class Day01 {
+public class Day01 implements Day<List<String>> {
 
     public static void main(String[] args) throws Exception {
         List<String> input = Files.readAllLines(Paths.get("src/main/resources/2019/day01.txt"));
-        System.out.println(part1(input));
-        System.out.println(part2(input));
+        new Day01().run(input);
     }
 
-    private static double part1(List<String> input) {
-        return input.stream()
+    @Override
+    public String part1(List<String> input) {
+        return String.valueOf(input.stream()
                 .map(Double::parseDouble)
-                .map(Day01::fuelFormula)
+                .map(this   ::fuelFormula)
                 .mapToDouble(x -> x)
-                .sum();
+                .sum());
     }
-
-    private static double part2(List<String> input) {
-        return input.stream()
+    @Override
+    public String part2(List<String> input) {
+        return String.valueOf(input.stream()
                 .map(Double::parseDouble)
-                .map(Day01::fuelFormula)
+                .map(this::fuelFormula)
                 .map(totalFuel -> {
                     double fuel = totalFuel;
                     while (fuel > 0) {
@@ -37,10 +39,10 @@ public class Day01 {
 
                 })
                 .mapToDouble(x -> x)
-                .sum();
+                .sum());
     }
 
-    private static double fuelFormula(Double mass) {
+    private double fuelFormula(Double mass) {
         return floor(mass / 3) - 2;
     }
 }
