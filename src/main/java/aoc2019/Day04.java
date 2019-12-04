@@ -3,7 +3,12 @@ package aoc2019;
 import util.Day;
 import util.Pair;
 
+import java.nio.CharBuffer;
 import java.util.stream.IntStream;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 public class Day04 implements Day<Pair<Integer, Integer>> {
 
@@ -50,17 +55,9 @@ public class Day04 implements Day<Pair<Integer, Integer>> {
     }
 
     boolean containsExactly2EqualConsecutiveDigits(char[] chars) {
-        for (int i = 0; i < chars.length - 1; i++) {
-            char digit = chars[i];
-            int count = 1;
-            while (i + 1 < chars.length && chars[i + 1] == digit) {
-                count++;
-                i++;
-            }
-            if (count == 2) {
-                return true;
-            }
-        }
-        return false;
+        return CharBuffer.wrap(chars).chars()
+                .boxed()
+                .collect(groupingBy(identity(), counting()))
+                .containsValue(2L);
     }
 }
