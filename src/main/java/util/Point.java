@@ -21,17 +21,12 @@ public class Point implements Comparable<Point> {
     }
 
     public Point apply(Direction direction) {
-        switch (direction) {
-            case UP:
-                return new Point(x, y + 1);
-            case DOWN:
-                return new Point(x, y - 1);
-            case LEFT:
-                return new Point(x - 1, y);
-            case RIGHT:
-                return new Point(x + 1, y);
-        }
-        return null;
+        return switch (direction) {
+            case UP -> new Point(x, y + 1);
+            case DOWN -> new Point(x, y - 1);
+            case LEFT -> new Point(x - 1, y);
+            case RIGHT -> new Point(x + 1, y);
+        };
     }
 
     @Override
