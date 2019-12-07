@@ -3,8 +3,6 @@ package aoc2019;
 import aoc2019.intcode.Computer;
 import util.Day;
 
-import java.util.Arrays;
-
 import static java.util.Arrays.stream;
 
 public class Day05 implements Day<int[]> {
@@ -17,11 +15,11 @@ public class Day05 implements Day<int[]> {
 
     @Override
     public String part1(int[] intCode) {
-        return Arrays.toString(Computer.run(intCode, 1));
+        return Computer.run(intCode, 1).toString();
     }
 
     @Override
     public String part2(int[] intCode) {
-        return Arrays.toString(Computer.run(intCode, 5));
+        return Computer.run(intCode, 5).toString();
     }
 }

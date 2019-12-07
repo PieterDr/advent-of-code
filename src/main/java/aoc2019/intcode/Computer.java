@@ -1,25 +1,30 @@
 package aoc2019.intcode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Computer {
 
     private int instructionPointer;
     private int inputPointer;
     private int[] intCode;
+    private List<Integer> outputs;
 
     public Computer(int[] intCode) {
         this.instructionPointer = 0;
         this.inputPointer = 0;
         this.intCode = intCode;
+        this.outputs = new ArrayList<>();
     }
 
-    public static int[] run(int[] intCode, int input) {
+    public static List<Integer> run(int[] intCode, int input) {
         int[] intCodeCopy = new int[intCode.length];
         System.arraycopy(intCode, 0, intCodeCopy, 0, intCode.length);
         return new Computer(intCodeCopy).run(input);
     }
 
     @SuppressWarnings("DuplicatedCode")
-    private int[] run(int... input) {
+    private List<Integer> run(int... input) {
         while (true) {
             int command = intCode[instructionPointer];
             int opcode = command % 100;
@@ -39,8 +44,7 @@ public class Computer {
                 int writeAddress = intCode[++instructionPointer];
                 intCode[writeAddress] = input[inputPointer++];
             } else if (opcode == 4) {
-                int output = getValue(parameterMode1);
-                System.out.println("OUTPUT: " + output);
+                outputs.add(getValue(parameterMode1));
             } else if (opcode == 5) {
                 int param1 = getValue(parameterMode1);
                 int param2 = getValue(parameterMode2);
@@ -66,7 +70,7 @@ public class Computer {
                 int outputAddress = intCode[++instructionPointer];
                 intCode[outputAddress] = a == b ? 1 : 0;
             } else if (opcode == 99) {
-                return intCode;
+                return outputs;
             } else {
                 throw new RuntimeException("Invalid opcode encountered: " + opcode + " at address " + instructionPointer);
             }
