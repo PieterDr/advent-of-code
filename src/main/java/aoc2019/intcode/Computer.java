@@ -17,7 +17,7 @@ public class Computer {
         this.outputs = new ArrayList<>();
     }
 
-    public static List<Integer> run(int[] intCode, int input) {
+    public static List<Integer> run(int[] intCode, int... input) {
         int[] intCodeCopy = new int[intCode.length];
         System.arraycopy(intCode, 0, intCodeCopy, 0, intCode.length);
         return new Computer(intCodeCopy).run(input);
