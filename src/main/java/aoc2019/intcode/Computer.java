@@ -3,10 +3,12 @@ package aoc2019.intcode;
 public class Computer {
 
     private int instructionPointer;
+    private int inputPointer;
     private int[] intCode;
 
     public Computer(int[] intCode) {
         this.instructionPointer = 0;
+        this.inputPointer = 0;
         this.intCode = intCode;
     }
 
@@ -17,7 +19,7 @@ public class Computer {
     }
 
     @SuppressWarnings("DuplicatedCode")
-    private int[] run(int input) {
+    private int[] run(int... input) {
         while (true) {
             int command = intCode[instructionPointer];
             int opcode = command % 100;
@@ -35,7 +37,7 @@ public class Computer {
                 intCode[outputAddress] = a * b;
             } else if (opcode == 3) {
                 int writeAddress = intCode[++instructionPointer];
-                intCode[writeAddress] = input;
+                intCode[writeAddress] = input[inputPointer++];
             } else if (opcode == 4) {
                 int output = getValue(parameterMode1);
                 System.out.println("OUTPUT: " + output);
