@@ -1,79 +1,85 @@
 package aoc2019.intcode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
+
+import static java.lang.Math.toIntExact;
 
 public class Computer {
 
-    private int instructionPointer;
-    private int inputPointer;
-    private int[] intCode;
-    private List<Integer> outputs;
+    private long instructionPointer;
+    private long inputPointer;
+    private Map<Long, Long> memory;
+    private List<Long> outputs;
 
-    public Computer(int[] intCode) {
+    public Computer(long[] intCode) {
         this.instructionPointer = 0;
         this.inputPointer = 0;
-        this.intCode = new int[intCode.length];
-        System.arraycopy(intCode, 0, this.intCode, 0, intCode.length);
         this.outputs = new ArrayList<>();
+        this.memory = new HashMap<>();
+        IntStream.range(0, intCode.length).forEach(i -> memory.put((long) i, intCode[i]));
     }
 
-    public static List<Integer> run(int[] intCode, int... input) {
+    public static List<Long> run(long[] intCode, long... input) {
         return new Computer(intCode).run(input);
     }
 
-    private List<Integer> run(int... input) {
-        run(() -> input[inputPointer++], outputs::add);
+    private List<Long> run(long... input) {
+        run(() -> input[toIntExact(inputPointer++)], outputs::add);
         return outputs;
     }
 
-    protected void run(Supplier<Integer> inputSupplier, Consumer<Integer> outputConsumer) {
+    protected void run(Supplier<Long> inputSupplier, Consumer<Long> outputConsumer) {
         while (true) {
-            int command = intCode[instructionPointer];
-            int opcode = command % 100;
-            int parameterMode2 = command % 10000 / 1000;
-            int parameterMode1 = command % 1000 / 100;
+            long command = memory.get(instructionPointer);
+            long opcode = command % 100;
+            long parameterMode1 = command % 1000 / 100;
+            long parameterMode2 = command % 10000 / 1000;
+            long parameterMode3 = command / 10000;
             if (opcode == 1) {
-                int a = getValue(parameterMode1);
-                int b = getValue(parameterMode2);
-                int outputAddress = intCode[++instructionPointer];
-                intCode[outputAddress] = a + b;
+                long a = getValue(parameterMode1);
+                long b = getValue(parameterMode2);
+                long writeAddress = getWriteAddress(parameterMode3);
+                memory.put(writeAddress, a + b);
             } else if (opcode == 2) {
-                int a = getValue(parameterMode1);
-                int b = getValue(parameterMode2);
-                int outputAddress = intCode[++instructionPointer];
-                intCode[outputAddress] = a * b;
+                long a = getValue(parameterMode1);
+                long b = getValue(parameterMode2);
+                long writeAddress = getWriteAddress(parameterMode3);
+                memory.put(writeAddress, a * b);
             } else if (opcode == 3) {
-                int writeAddress = intCode[++instructionPointer];
-                intCode[writeAddress] = inputSupplier.get();
+                long writeAddress = getWriteAddress(parameterMode1);
+                memory.put(writeAddress, inputSupplier.get());
             } else if (opcode == 4) {
                 outputConsumer.accept(getValue(parameterMode1));
             } else if (opcode == 5) {
-                int param1 = getValue(parameterMode1);
-                int param2 = getValue(parameterMode2);
+                long param1 = getValue(parameterMode1);
+                long param2 = getValue(parameterMode2);
                 if (param1 != 0) {
                     instructionPointer = param2;
                     continue;
                 }
             } else if (opcode == 6) {
-                int param1 = getValue(parameterMode1);
-                int param2 = getValue(parameterMode2);
+                long param1 = getValue(parameterMode1);
+                long param2 = getValue(parameterMode2);
                 if (param1 == 0) {
                     instructionPointer = param2;
                     continue;
                 }
             } else if (opcode == 7) {
-                int a = getValue(parameterMode1);
-                int b = getValue(parameterMode2);
-                int outputAddress = intCode[++instructionPointer];
-                intCode[outputAddress] = a < b ? 1 : 0;
+                long a = getValue(parameterMode1);
+                long b = getValue(parameterMode2);
+                long writeAddress = getWriteAddress(parameterMode3);
+                memory.put(writeAddress, a < b ? 1L : 0);
             } else if (opcode == 8) {
-                int a = getValue(parameterMode1);
-                int b = getValue(parameterMode2);
-                int outputAddress = intCode[++instructionPointer];
-                intCode[outputAddress] = a == b ? 1 : 0;
+                long a = getValue(parameterMode1);
+                long b = getValue(parameterMode2);
+                long writeAddress = getWriteAddress(parameterMode3);
+                memory.put(writeAddress, a == b ? 1L : 0);
             } else if (opcode == 99) {
                 return;
             } else {
@@ -83,7 +89,12 @@ public class Computer {
         }
     }
 
-    private int getValue(int parameterMode1) {
-        return parameterMode1 == 0 ? intCode[intCode[++instructionPointer]] : intCode[++instructionPointer];
+    private long getValue(long parameterMode) {
+        long memoryValue = memory.get(++instructionPointer);
+        return parameterMode == 0 ? memory.get(memoryValue) : memoryValue;
+    }
+
+    private long getWriteAddress(long parameterMode) {
+        return memory.get(++instructionPointer);
     }
 }

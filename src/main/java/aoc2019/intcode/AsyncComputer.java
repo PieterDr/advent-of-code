@@ -4,11 +4,11 @@ import java.util.concurrent.BlockingQueue;
 
 public class AsyncComputer extends Computer implements Runnable {
 
-    private BlockingQueue<Integer> inputQueue;
-    private BlockingQueue<Integer> outputQueue;
+    private BlockingQueue<Long> inputQueue;
+    private BlockingQueue<Long> outputQueue;
     private boolean finished = false;
 
-    public AsyncComputer(int[] intCode, BlockingQueue<Integer> inputQueue, BlockingQueue<Integer> outputQueue) {
+    public AsyncComputer(long[] intCode, BlockingQueue<Long> inputQueue, BlockingQueue<Long> outputQueue) {
         super(intCode);
         this.inputQueue = inputQueue;
         this.outputQueue = outputQueue;
@@ -26,7 +26,7 @@ public class AsyncComputer extends Computer implements Runnable {
         }
     }
 
-    private void putOutput(int output) {
+    private void putOutput(long output) {
         try {
             outputQueue.put(output);
         } catch (InterruptedException e) {
@@ -34,7 +34,7 @@ public class AsyncComputer extends Computer implements Runnable {
         }
     }
 
-    private int takeInput() {
+    private long takeInput() {
         try {
             return inputQueue.take();
         } catch (InterruptedException e) {
