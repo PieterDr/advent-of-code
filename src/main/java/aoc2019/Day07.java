@@ -1,5 +1,6 @@
 package aoc2019;
 
+import aoc2019.intcode.AsyncComputer;
 import aoc2019.intcode.Computer;
 import util.Day;
 
@@ -65,12 +66,12 @@ public class Day07 implements Day<int[]> {
             ArrayBlockingQueue<Integer> cInput = new ArrayBlockingQueue<>(10, true, asList(phaseSetting[2]));
             ArrayBlockingQueue<Integer> dInput = new ArrayBlockingQueue<>(10, true, asList(phaseSetting[3]));
             ArrayBlockingQueue<Integer> eInput = new ArrayBlockingQueue<>(10, true, asList(phaseSetting[4]));
-            Computer a = new Computer(program, aInput, bInput);
-            Computer b = new Computer(program, bInput, cInput);
-            Computer c = new Computer(program, cInput, dInput);
-            Computer d = new Computer(program, dInput, eInput);
-            Computer e = new Computer(program, eInput, aInput);
-            asList(a, b, c, d, e).forEach(Thread::start);
+            AsyncComputer a = new AsyncComputer(program, aInput, bInput);
+            AsyncComputer b = new AsyncComputer(program, bInput, cInput);
+            AsyncComputer c = new AsyncComputer(program, cInput, dInput);
+            AsyncComputer d = new AsyncComputer(program, dInput, eInput);
+            AsyncComputer e = new AsyncComputer(program, eInput, aInput);
+            Stream.of(a, b, c, d, e).map(Thread::new).forEach(Thread::start);
             e.join();
             return aInput.poll();
         } catch (InterruptedException e) {

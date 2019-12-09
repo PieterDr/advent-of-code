@@ -2,18 +2,15 @@ package aoc2019.intcode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class Computer extends Thread {
+public class Computer {
 
     private int instructionPointer;
     private int inputPointer;
     private int[] intCode;
     private List<Integer> outputs;
-    private BlockingQueue<Integer> inputQueue;
-    private BlockingQueue<Integer> outputQueue;
 
     public Computer(int[] intCode) {
         this.instructionPointer = 0;
@@ -21,16 +18,6 @@ public class Computer extends Thread {
         this.intCode = new int[intCode.length];
         System.arraycopy(intCode, 0, this.intCode, 0, intCode.length);
         this.outputs = new ArrayList<>();
-    }
-
-    public Computer(int[] intCode, BlockingQueue<Integer> inputQueue, BlockingQueue<Integer> outputQueue) {
-        this.instructionPointer = 0;
-        this.inputPointer = 0;
-        this.intCode = new int[intCode.length];
-        System.arraycopy(intCode, 0, this.intCode, 0, intCode.length);
-        this.outputs = new ArrayList<>();
-        this.inputQueue = inputQueue;
-        this.outputQueue = outputQueue;
     }
 
     public static List<Integer> run(int[] intCode, int... input) {
@@ -42,28 +29,7 @@ public class Computer extends Thread {
         return outputs;
     }
 
-    @Override
-    public void run() {
-        run(this::takeInput, this::putOutput);
-    }
-
-    private void putOutput(Integer output) {
-        try {
-            outputQueue.put(output);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private int takeInput() {
-        try {
-            return inputQueue.take();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void run(Supplier<Integer> inputSupplier, Consumer<Integer> outputConsumer) {
+    protected void run(Supplier<Integer> inputSupplier, Consumer<Integer> outputConsumer) {
         while (true) {
             int command = intCode[instructionPointer];
             int opcode = command % 100;
