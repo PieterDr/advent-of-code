@@ -4,8 +4,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class AsyncComputer extends Computer implements Runnable {
 
-    private BlockingQueue<Long> inputQueue;
-    private BlockingQueue<Long> outputQueue;
+    public BlockingQueue<Long> inputQueue;
+    public BlockingQueue<Long> outputQueue;
     private boolean finished = false;
 
     public AsyncComputer(long[] intCode, BlockingQueue<Long> inputQueue, BlockingQueue<Long> outputQueue) {
@@ -18,6 +18,10 @@ public class AsyncComputer extends Computer implements Runnable {
     public void run() {
         run(this::takeInput, this::putOutput);
         finished = true;
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 
     public void join() throws InterruptedException {
