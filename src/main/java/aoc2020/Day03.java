@@ -6,37 +6,31 @@ import util.Point;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class Day03 implements Day<List<List<Character>>> {
+public class Day03 implements Day<List<char[]>> {
 
     public static void main(String[] args) throws IOException {
         List<String> input = Files.readAllLines(Path.of(Day03.class.getClassLoader().getResource("2020/day03.txt").getPath()));
-        parse(input);
         new Day03().run(parse(input));
     }
 
-    private static List<List<Character>> parse(List<String> input) {
-        List<List<Character>> forest = new ArrayList<>();
-        for (String line : input) {
-            ArrayList<Character> row = new ArrayList<>();
-            for (char c : line.toCharArray()) {
-                row.add(c);
-            };
-            forest.add(row);
-        }
-        return forest;
+    private static List<char[]> parse(List<String> input) {
+        return input.stream()
+                .map(String::toCharArray)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public String part1(List<List<Character>> input) {
+    public String part1(List<char[]> input) {
         long trees = getTrees(input, new Point(3, 1));
         return "" + trees;
     }
 
     @Override
-    public String part2(List<List<Character>> input) {
+    public String part2(List<char[]> input) {
         long result = getTrees(input, new Point(1, 1))
                 * getTrees(input, new Point(3, 1))
                 * getTrees(input, new Point(5, 1))
@@ -45,15 +39,14 @@ public class Day03 implements Day<List<List<Character>>> {
         return "" + result;
     }
 
-    private long getTrees(List<List<Character>> input, Point slope) {
-        Point position = new Point(0, 0);
-        int bottom = input.size() - 1;
-        long trees = 0;
-        while (position.y < bottom) {
-            position = position.add(slope);
-            List<Character> row = input.get(position.y);
-            if (row.get(position.x % row.size()) == '#') trees++;
-        }
-        return trees;
+    private long getTrees(List<char[]> input, Point slope) {
+        return IntStream.range(1, input.size())
+                .mapToObj(slope::multiply)
+                .filter(position -> position.y < input.size())
+                .filter(position -> {
+                    char[] row = input.get(position.y);
+                    return row[position.x % row.length] == '#';
+                })
+                .count();
     }
 }

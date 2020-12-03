@@ -58,4 +58,8 @@ public class Point implements Comparable<Point> {
     public int distanceTo(Point o) {
         return Math.abs(o.x - x) + Math.abs(o.y - y);
     }
+
+    public Point multiply(int i) {
+        return new Point(x * i, y * i);
+    }
 }
