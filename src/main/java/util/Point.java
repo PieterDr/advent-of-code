@@ -1,6 +1,10 @@
 package util;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Point implements Comparable<Point> {
 
@@ -14,6 +18,34 @@ public class Point implements Comparable<Point> {
     public Point(String x, String y) {
         this.x = Integer.parseInt(x);
         this.y = Integer.parseInt(y);
+    }
+
+    public static Stream<Point> generate(int rows, int columns) {
+        return IntStream.range(0, rows)
+                .mapToObj(x -> IntStream.range(0, columns)
+                        .mapToObj(y -> new Point(x, y))
+                        .toList())
+                .flatMap(Collection::stream);
+    }
+
+    public List<Point> neighbours(boolean diagonal) {
+        Stream<Point> directNeighbours = Stream.of(
+                new Point(x - 1, y),
+                new Point(x + 1, y),
+                new Point(x, y - 1),
+                new Point(x, y + 1)
+        );
+        Stream<Point> diagonalNeighbours = Stream.of(
+                new Point(x - 1, y - 1),
+                new Point(x - 1, y + 1),
+                new Point(x + 1, y - 1),
+                new Point(x + 1, y + 1)
+        );
+        if (diagonal) {
+            return Stream.concat(directNeighbours, diagonalNeighbours).toList();
+        } else {
+            return diagonalNeighbours.toList();
+        }
     }
 
     @Override
