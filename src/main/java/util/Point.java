@@ -28,6 +28,14 @@ public class Point implements Comparable<Point> {
                 .flatMap(Collection::stream);
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
     public List<Point> neighbours(boolean diagonal) {
         Stream<Point> directNeighbours = Stream.of(
                 new Point(x - 1, y),
